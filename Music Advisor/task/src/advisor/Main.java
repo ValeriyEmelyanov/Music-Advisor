@@ -3,15 +3,34 @@ package advisor;
 import java.util.Scanner;
 
 public class Main {
+    private static final String CLIENT_ID = "0dc73b190af34720b5ef1541c17df349";
+    private static final String AUTH_URL = "https://accounts.spotify.com/authorize"
+        + "?client_id=%s&redirect_uri=http://localhost:8080&response_type=code";
+
+    private boolean isAuth = false;
+
     public static void main(String[] args) {
+        Main main = new Main();
+        main.run();
+    }
+
+    public void run() {
         final Scanner scanner = new Scanner(System.in);
 
-        boolean exit = false;
         String request;
-        while (!exit) {
-            request = scanner.nextLine();
+        while (scanner.hasNext()) {
+            request = scanner.nextLine().trim();
+
+            if (!isAuth && !request.equals("auth")) {
+                System.out.println("Please, provide access for application.");
+                continue;
+            }
+
             String[] requestWords = request.split("\\s+");
             switch (requestWords[0]) {
+                case "auth":
+                    auth();
+                    break;
                 case "new":
                     printNew();
                     break;
@@ -25,16 +44,22 @@ public class Main {
                     printPlaylists(requestWords[1]);
                     break;
                 case "exit":
-                    exit = true;
+                    scanner.close();
                     System.out.println("---GOODBYE!---");
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid request! Try again");
             }
         }
     }
 
-    private static void printPlaylists(String requestWord) {
+    private void auth() {
+        isAuth = true;
+        System.out.println(String.format(AUTH_URL, CLIENT_ID));
+        System.out.println("---SUCCESS---");
+    }
+
+    private void printPlaylists(String requestWord) {
         System.out.println("---MOOD PLAYLISTS---");
         System.out.println("Walk Like A Badass");
         System.out.println("Rage Beats");
@@ -42,7 +67,7 @@ public class Main {
         System.out.println("Sunday Stroll");
     }
 
-    private static void printCategories() {
+    private void printCategories() {
         System.out.println("---CATEGORIES---");
         System.out.println("Top Lists");
         System.out.println("Pop");
@@ -50,7 +75,7 @@ public class Main {
         System.out.println("Latin");
     }
 
-    private static void printFeatured() {
+    private void printFeatured() {
         System.out.println("---FEATURED---");
         System.out.println("Mellow Morning");
         System.out.println("Wake Up and Smell the Coffee");
@@ -58,7 +83,7 @@ public class Main {
         System.out.println("Songs to Sing in the Shower");
     }
 
-    private static void printNew() {
+    private void printNew() {
         System.out.println("---NEW RELEASES---");
         System.out.println("Mountains [Sia, Diplo, Labrinth]");
         System.out.println("Runaway [Lil Peep]");
