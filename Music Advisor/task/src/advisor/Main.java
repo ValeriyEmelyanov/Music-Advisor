@@ -1,20 +1,25 @@
 package advisor;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    private static final String CLIENT_ID = "0dc73b190af34720b5ef1541c17df349";
-    private static final String AUTH_URL = "https://accounts.spotify.com/authorize"
-        + "?client_id=%s&redirect_uri=http://localhost:8080&response_type=code";
-
+    private String serverPath;
     private boolean isAuth = false;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Main main = new Main();
+        if (args.length == 2 && "-access".equals(args[0])) {
+            main.setServerPath(args[1]);
+        }
         main.run();
     }
 
-    public void run() {
+    public void setServerPath(String serverPath) {
+        this.serverPath = serverPath;
+    }
+
+    public void run() throws IOException, InterruptedException {
         final Scanner scanner = new Scanner(System.in);
 
         String request;
@@ -53,9 +58,19 @@ public class Main {
         }
     }
 
-    private void auth() {
+    private void auth() throws IOException, InterruptedException {
+        CodeReceiver codeReceiver = new CodeReceiver();
+        codeReceiver.run();
+        if (!codeReceiver.isSuccess()) {
+            System.out.println("Auth is failed. Try again.");
+            return;
+        }
+        String code = codeReceiver.getCode();
+
+        AdvisorHttpClient client = new AdvisorHttpClient();
+        client.getAccessToken(serverPath, code);
+
         isAuth = true;
-        System.out.println(String.format(AUTH_URL, CLIENT_ID));
         System.out.println("---SUCCESS---");
     }
 
