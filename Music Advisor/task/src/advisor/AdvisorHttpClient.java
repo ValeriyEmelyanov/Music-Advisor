@@ -6,7 +6,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static advisor.ConstData.*;
+import static advisor.EndPoints.*;
+import static advisor.SecureData.*;
 
 public class AdvisorHttpClient {
     private final HttpClient client;
@@ -19,7 +20,7 @@ public class AdvisorHttpClient {
         System.out.println("making http request for access_token...");
 
         URI uri = URI.create(
-                (serverPath == null || serverPath.isEmpty() ? SERVER_PATH : serverPath)
+                (serverPath == null || serverPath.isEmpty() ? DEFAULT_SERVER_PATH : serverPath)
                         + ACCESS_TOKEN_REQUEST_PATH);
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Content-Type", "application/x-www-form-urlencoded")

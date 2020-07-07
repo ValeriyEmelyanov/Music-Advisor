@@ -7,11 +7,11 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import static advisor.ConstData.*;
+import static advisor.EndPoints.*;
+import static advisor.SecureData.*;
 
 public class CodeReceiver {
     private static final String SUCCESS_ANSWER = "Got the code. Return back to your program.";
-    //private static final String ERROR_ANSWER = "Authorization code not found. Try again.";
     private static final String ERROR_ANSWER = "Not found authorization code. Try again.";
 
     private final HttpServer server;
