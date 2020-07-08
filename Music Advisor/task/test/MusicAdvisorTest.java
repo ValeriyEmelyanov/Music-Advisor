@@ -487,13 +487,13 @@ public class MusicAdvisorTest extends StageTest<String> {
         String album1 =
                 "Runnin'\n" +
                         "[Pharrell Williams]\n" +
-                        "https://open.spotify.com/album/5ZX4m5aVSmWQ5iHAPQpT71"
+                        "https://api.spotify.com/v1/albums/5ZX4m5aVSmWQ5iHAPQpT71"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         String album2 =
                 "Sneakin'\n" +
                         "[Drake2, Drake3]\n" +
-                        "https://open.spotify.com/album/0geTzdk2InlqIoB16fW9Nd"
+                        "https://api.spotify.com/v1/albums/0geTzdk2InlqIoB16fW9Nd"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         if (outputAfterNew.contains("Invalid access token")) {
@@ -560,12 +560,12 @@ public class MusicAdvisorTest extends StageTest<String> {
 
         String featured1 =
                 "Monday Morning Mood\n" +
-                        "http://open.spotify.com/user/spotify/playlist/6ftJBzU2LLQcaKefMi7ee7"
+                        "https://api.spotify.com/v1/users/spotify/playlists/6ftJBzU2LLQcaKefMi7ee7"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         String featured2 =
                 "Upp och hoppa!\n" +
-                        "http://open.spotify.com/user/spotify__sverige/playlist/4uOEx4OUrkoGNZoIlWMUbO"
+                        "https://api.spotify.com/v1/users/spotify__sverige/playlists/4uOEx4OUrkoGNZoIlWMUbO"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         if (!outputAfterFeatured.contains(featured1)
@@ -596,12 +596,12 @@ public class MusicAdvisorTest extends StageTest<String> {
 
         String playlist1 =
                 "Noite Eletronica\n" +
-                        "http://open.spotify.com/user/spotifybrazilian/playlist/4k7EZPI3uKMz4aRRrLVfen"
+                        "https://api.spotify.com/v1/users/spotifybrazilian/playlists/4k7EZPI3uKMz4aRRrLVfen"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         String playlist2 =
                 "Festa Indie\n" +
-                        "http://open.spotify.com/user/spotifybrazilian/playlist/4HZh0C9y80GzHDbHZyX770"
+                        "https://api.spotify.com/v1/users/spotifybrazilian/playlists/4HZh0C9y80GzHDbHZyX770"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         if (!outputAfterPartyPlaylist.contains(playlist1)
@@ -632,12 +632,12 @@ public class MusicAdvisorTest extends StageTest<String> {
 
         String playlist1 =
                 "Noite Eletronica\n" +
-                        "http://open.spotify.com/user/spotifybrazilian/playlist/4k7EZPI3uKMz4aRRrLVfen"
+                        "https://api.spotify.com/v1/users/spotifybrazilian/playlists/4k7EZPI3uKMz4aRRrLVfen"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         String playlist2 =
                 "Festa Indie\n" +
-                        "http://open.spotify.com/user/spotifybrazilian/playlist/4HZh0C9y80GzHDbHZyX770"
+                        "https://api.spotify.com/v1/users/spotifybrazilian/playlists/4HZh0C9y80GzHDbHZyX770"
                                 .replaceAll(spotifyServerUrl, resourceServerUrl);
 
         if (!outputAfterUnknownPlaylist.contains(playlist1)

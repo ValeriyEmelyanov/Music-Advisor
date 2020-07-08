@@ -1,0 +1,15 @@
+type: code
+files:
+- name: src/Main.java
+  visible: true
+  text: "/**\n * Class to implement\n */\nclass ReflexiveBaker {\n\n\t/**\n\t * Create\
+    \ bakery of the provided class.\n\t * \n\t * @param order class of bakery to create\n\
+    \t * @return bakery object\n\t */\n\tpublic Object bake(Class order) {\n\t\t//\
+    \ Add implementation here\n\t}\n\n}\n\n// Don't change classes below\nclass Paper\
+    \ { }\n\nclass Bakery { }\n\nclass Cake extends Bakery { }\n\nclass Pie extends\
+    \ Bakery { }\n\nclass Tart extends Bakery { }\n\nclass ApplePie extends Pie {\
+    \ }"
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/2588
+status: Solved
+record: -1

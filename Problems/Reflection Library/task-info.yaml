@@ -1,0 +1,23 @@
+type: code
+files:
+- name: src/Main.java
+  visible: true
+  text: |-
+    class ReflectionLibrary {
+
+        public static Class getPrimitiveClass(String name) {
+
+        }
+
+        public static String getClassEncoding(String name) {
+
+        }
+
+        public static String getObjectEncoding(Object object) {
+
+        }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/9951
+status: Solved
+record: -1

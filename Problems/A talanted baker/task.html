@@ -1,0 +1,34 @@
+<b>A talanted baker</b> <a class=right href="https://hyperskill.org/learn/step/2588">Open on JetBrains Academy</a>
+<br><br>
+<html>
+ <head></head>
+ <body>
+  <p>Pie company is looking for a talented baker and you are invited to implement one. The baker's duty is to get orders for bakery and it's varieties and produces it. Class definition and method's backbone follows:</p> 
+  <pre><code class="language-java">class Paper {}
+
+class Bakery {}
+
+class Cake extends Bakery {}
+
+class ReflexiveBaker {
+  
+  /**
+   * Create bakery of the provided class.
+   * 
+   * @param order class of bakery to create
+   * @return bakery object
+   */
+  public Object bake(Class order) {
+    // Add implementation here
+  }
+  
+}</code></pre> 
+  <p>The task is to redesign method signature types if needed and to add implementation. The <em>bake</em> method should conform to the following:</p> 
+  <ul> 
+   <li>Create objects of class Bakery or any subclass of it according to class argument</li> 
+   <li>Flag compile-time error if order argument is not Bakery or any subclass of it (e.g. if it is Paper or Object)</li> 
+  </ul> 
+  <p>It's guaranteed that all subclasses of Bakery will have a parameterless constructor.</p>
+ </body>
+</html><br><b>Sample Input:</b><br>ReflexiveBaker class<br><br><b>Sample Output:</b><br>Well done!<br><br><br><font color="gray">Memory limit: 256 MB</font><br><font color="gray">Time limit: 8 seconds</font><br><br>
+<a href="https://hyperskill.org/learn/step/3562">Show topic summary</a>

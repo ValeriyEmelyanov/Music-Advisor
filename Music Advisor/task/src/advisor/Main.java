@@ -1,22 +1,34 @@
 package advisor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private String serverPath;
     private boolean isAuth = false;
+    private final AdvisorHttpClient httpClient = new AdvisorHttpClient();
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        List<String> argsList = new ArrayList<>();
+        for (String arg : args) {
+            argsList.addAll(Arrays.asList(arg.split("[\\u00A0\\s]+")));
+        }
+        if (argsList.size() % 2 != 0) {
+            throw new IllegalArgumentException("Wrong argument number!");
+        }
+
         Main main = new Main();
-        if (args.length == 2 && "-access".equals(args[0])) {
-            main.setServerPath(args[1]);
+        for (int i = 0; i < argsList.size(); i += 2) {
+            if ("-access".equals(argsList.get(i))) {
+                main.httpClient.setServerPath(argsList.get(i + 1));
+            }
+            if ("-resource".equals(argsList.get(i))) {
+                main.httpClient.setResourcePath(argsList.get(i + 1));
+            }
         }
         main.run();
-    }
-
-    public void setServerPath(String serverPath) {
-        this.serverPath = serverPath;
     }
 
     public void run() throws IOException, InterruptedException {
@@ -26,7 +38,13 @@ public class Main {
         while (scanner.hasNext()) {
             request = scanner.nextLine().trim();
 
-            if (!isAuth && !request.equals("auth")) {
+            if ("exit".equals(request)) {
+                scanner.close();
+                System.out.println("Goodbye!");
+                return;
+            }
+
+            if (!isAuth && !"auth".equals(request)) {
                 System.out.println("Please, provide access for application.");
                 continue;
             }
@@ -46,12 +64,9 @@ public class Main {
                     printCategories();
                     break;
                 case "playlists":
-                    printPlaylists(requestWords[1]);
+                    String name = request.substring(requestWords[0].length()).trim();
+                    printPlaylists(name);
                     break;
-                case "exit":
-                    scanner.close();
-                    System.out.println("---GOODBYE!---");
-                    return;
                 default:
                     System.out.println("Invalid request! Try again");
             }
@@ -67,42 +82,42 @@ public class Main {
         }
         String code = codeReceiver.getCode();
 
-        AdvisorHttpClient client = new AdvisorHttpClient();
-        client.getAccessToken(serverPath, code);
-
-        isAuth = true;
-        System.out.println("---SUCCESS---");
+        isAuth = httpClient.getAccessToken(code);
     }
 
-    private void printPlaylists(String requestWord) {
-        System.out.println("---MOOD PLAYLISTS---");
-        System.out.println("Walk Like A Badass");
-        System.out.println("Rage Beats");
-        System.out.println("Arab Mood Booster");
-        System.out.println("Sunday Stroll");
+    private void printPlaylists(String name) {
+        List<String> list = httpClient.getPlaylist(name);
+        if (list == null) {
+            return;
+        }
+
+        list.forEach(System.out::println);
     }
 
     private void printCategories() {
-        System.out.println("---CATEGORIES---");
-        System.out.println("Top Lists");
-        System.out.println("Pop");
-        System.out.println("Mood");
-        System.out.println("Latin");
+        List<String> list = httpClient.getCategories();
+        if (list == null) {
+            return;
+        }
+
+        list.forEach(System.out::println);
     }
 
     private void printFeatured() {
-        System.out.println("---FEATURED---");
-        System.out.println("Mellow Morning");
-        System.out.println("Wake Up and Smell the Coffee");
-        System.out.println("Monday Motivation");
-        System.out.println("Songs to Sing in the Shower");
+        List<String> list = httpClient.getFeatured();
+        if (list == null) {
+            return;
+        }
+
+        list.forEach(System.out::println);
     }
 
     private void printNew() {
-        System.out.println("---NEW RELEASES---");
-        System.out.println("Mountains [Sia, Diplo, Labrinth]");
-        System.out.println("Runaway [Lil Peep]");
-        System.out.println("The Greatest Show [Panic! At The Disco]");
-        System.out.println("All Out Life [Slipknot]");
+        List<String> list = httpClient.getNew();
+        if (list == null) {
+            return;
+        }
+
+        list.forEach(System.out::println);
     }
 }
