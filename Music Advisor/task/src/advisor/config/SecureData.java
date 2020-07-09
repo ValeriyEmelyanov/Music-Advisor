@@ -1,4 +1,4 @@
-package advisor;
+package advisor.config;
 
 public class SecureData {
     public static final String CLIENT_ID = "0dc73b190af34720b5ef1541c17df349";

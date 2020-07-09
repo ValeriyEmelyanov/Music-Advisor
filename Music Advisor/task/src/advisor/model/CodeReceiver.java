@@ -1,4 +1,4 @@
-package advisor;
+package advisor.model;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -6,9 +6,6 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import static advisor.EndPoints.*;
-import static advisor.SecureData.*;
 
 public class CodeReceiver {
     private static final String SUCCESS_ANSWER = "Got the code. Return back to your program.";
@@ -53,16 +50,8 @@ public class CodeReceiver {
     public void run() throws InterruptedException {
         server.start();
 
-        System.out.println("use this link to request the access code:");
-        System.out.println(String.format(AUTH_URL, CLIENT_ID));
-        System.out.println("waiting for code...");
-
         while (!stop) {
             Thread.sleep(10);
-        }
-
-        if (isSuccess()) {
-            System.out.println("code received");
         }
 
         server.stop(1);

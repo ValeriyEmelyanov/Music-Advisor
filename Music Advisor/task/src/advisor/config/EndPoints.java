@@ -1,4 +1,4 @@
-package advisor;
+package advisor.config;
 
 public class EndPoints {
 
