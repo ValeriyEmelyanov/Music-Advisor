@@ -327,7 +327,9 @@ public class AdvisorHttpClient {
             }
 
             if (page == null) {
-                page = getCategories();
+                int bigLimit = 50;
+                page = getCategories(getResourcePath() +
+                        CATEGORIES_REQUEST_PATH.replaceAll("\\{limit}", String.valueOf(bigLimit)));
             } else {
                 page = getCategories(page.getNext());
             }
