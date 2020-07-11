@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
 
@@ -23,9 +22,14 @@ public class Main {
         for (int i = 0; i < argsList.size(); i += 2) {
             if ("-access".equals(argsList.get(i))) {
                 controller.setServerPath(argsList.get(i + 1));
+                continue;
             }
             if ("-resource".equals(argsList.get(i))) {
                 controller.setResourcePath(argsList.get(i + 1));
+                continue;
+            }
+            if ("-page".equals(argsList.get(i))) {
+                controller.setLimit(argsList.get(i + 1));
             }
         }
         controller.run();

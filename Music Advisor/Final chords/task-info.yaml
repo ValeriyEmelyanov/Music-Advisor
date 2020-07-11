@@ -808,6 +808,46 @@ files:
         }
     }
   learner_created: false
+- name: src/advisor/controller/AdvisorController.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/entities/Album.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/entities/Category.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/entities/Playlist.java
+  visible: true
+  learner_created: true
+- name: src/advisor/veiw/ConsoleView.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/Page.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/navigatestrategy/Navigator.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/navigatestrategy/FeaturedNavigator.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/navigatestrategy/NewNavigator.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/navigatestrategy/CategoriesNavigator.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/navigatestrategy/PlaylistsNavigator.java
+  visible: true
+  learner_created: true
+- name: src/advisor/model/navigatestrategy/AbstractNavigator.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/62/stages/339/implement
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/62/stages/339/implement">JetBrains
+    Academy</a>
+  time: Fri, 10 Jul 2020 14:40:27 UTC
 record: -1

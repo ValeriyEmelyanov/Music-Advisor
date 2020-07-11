@@ -11,8 +11,8 @@ public class EndPoints {
 
     public static final String ACCESS_TOKEN_REQUEST_PATH = "/api/token";
 
-    public static final String CATEGORIES_REQUEST_PATH = "/v1/browse/categories";
-    public static final String PLAYLIST_REQUEST_PATH = "/v1/browse/categories/{category_id}/playlists";
-    public static final String NEW_RELEASES_REQUEST_PATH = "/v1/browse/new-releases";
-    public static final String FEATURED_REQUEST_PATH = "/v1/browse/featured-playlists";
+    public static final String CATEGORIES_REQUEST_PATH = "/v1/browse/categories?limit={limit}";
+    public static final String PLAYLIST_REQUEST_PATH = "/v1/browse/categories/{category_id}/playlists?limit={limit}";
+    public static final String NEW_RELEASES_REQUEST_PATH = "/v1/browse/new-releases?offset=0&limit={limit}";
+    public static final String FEATURED_REQUEST_PATH = "/v1/browse/featured-playlists?limit={limit}";
 }

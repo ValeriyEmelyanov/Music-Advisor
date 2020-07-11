@@ -28,9 +28,19 @@ import static advisor.config.SecureData.CLIENT_ID;
 import static advisor.config.SecureData.CLIENT_SECRET;
 
 public class AdvisorHttpClient {
+    private static final AdvisorHttpClient INSTANCE = new AdvisorHttpClient();
+
     private String serverPath;
     private String resourcePath;
     private String accessToken;
+    private String limit = "5";
+
+    private AdvisorHttpClient() {
+    }
+
+    public static AdvisorHttpClient getInstance() {
+        return INSTANCE;
+    }
 
     public String getServerPath() {
         return serverPath == null || serverPath.isEmpty() ? DEFAULT_SERVER_PATH : serverPath;
@@ -46,6 +56,10 @@ public class AdvisorHttpClient {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
+    }
+
+    public void setLimit(String limit) {
+        this.limit = limit;
     }
 
     public boolean getAccessToken(String code) throws IOException, InterruptedException {
@@ -83,10 +97,32 @@ public class AdvisorHttpClient {
                 "&redirect_uri=" + REDIRECT_URI;
     }
 
-    public List<Album> getNewAlbums() throws IOException, InterruptedException {
+    private void checkError(JsonObject jo) throws IOException {
+        JsonElement errorElement = jo.get("error");
+        if (errorElement == null) {
+            return;
+        }
+
+        JsonObject error = errorElement.getAsJsonObject();
+        JsonElement messageElement = error.get("message");
+        String message;
+        if (messageElement != null) {
+            message = messageElement.getAsString();
+        } else {
+            message = "Error response";
+        }
+
+        throw new IOException(message);
+    }
+
+    public Page<Album> getNewAlbums() throws IOException, InterruptedException {
+        return getNewAlbums(getResourcePath() + NEW_RELEASES_REQUEST_PATH.replaceAll("\\{limit}", limit));
+    }
+
+    public Page<Album> getNewAlbums(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Authorization", "Bearer " + accessToken)
-                .uri(URI.create(getResourcePath() + NEW_RELEASES_REQUEST_PATH))
+                .uri(URI.create(url))
                 .GET()
                 .build();
 
@@ -98,7 +134,9 @@ public class AdvisorHttpClient {
 
         List<Album> list = new ArrayList<>();
 
-        JsonArray albumElements = jo.get("albums").getAsJsonObject().get("items").getAsJsonArray();
+        JsonObject albums = jo.get("albums").getAsJsonObject();
+
+        JsonArray albumElements = albums.get("items").getAsJsonArray();
         for (JsonElement albumElement : albumElements) {
             JsonObject album = albumElement.getAsJsonObject();
 
@@ -119,31 +157,28 @@ public class AdvisorHttpClient {
             list.add(new Album(name, artistList, href));
         }
 
-        return list;
+        JsonElement next = albums.get("next");
+        String nextRef = next.isJsonNull() ? null : next.getAsString();
+        JsonElement previous = albums.get("previous");
+        String previousRef = previous.isJsonNull() ? null : previous.getAsString();
+
+        return new Page<>(
+                list,
+                albums.get("limit").getAsInt(),
+                albums.get("offset").getAsInt(),
+                albums.get("total").getAsInt(),
+                nextRef,
+                previousRef);
     }
 
-    private void checkError(JsonObject jo) throws IOException {
-        JsonElement errorElement = jo.get("error");
-        if (errorElement == null) {
-            return;
-        }
-
-        JsonObject error = errorElement.getAsJsonObject();
-        JsonElement messageElement = error.get("message");
-        String message;
-        if (messageElement != null) {
-            message = messageElement.getAsString();
-        } else {
-            message = "Error response";
-        }
-
-        throw new IOException(message);
+    public Page<Category> getCategories() throws IOException, InterruptedException {
+        return getCategories(getResourcePath() + CATEGORIES_REQUEST_PATH.replaceAll("\\{limit}", limit));
     }
 
-    public List<Category> getCategories() throws IOException, InterruptedException {
+    public Page<Category> getCategories(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Authorization", "Bearer " + accessToken)
-                .uri(URI.create(getResourcePath() + CATEGORIES_REQUEST_PATH))
+                .uri(URI.create(url))
                 .GET()
                 .build();
 
@@ -155,7 +190,8 @@ public class AdvisorHttpClient {
 
         List<Category> list = new ArrayList<>();
 
-        JsonArray elements = jo.get("categories").getAsJsonObject().get("items").getAsJsonArray();
+        JsonObject categories = jo.get("categories").getAsJsonObject();
+        JsonArray elements = categories.get("items").getAsJsonArray();
         for (JsonElement element : elements) {
             JsonObject category = element.getAsJsonObject();
             list.add(new Category(
@@ -163,13 +199,28 @@ public class AdvisorHttpClient {
                     category.get("name").getAsString()));
         }
 
-        return list;
+        JsonElement next = categories.get("next");
+        String nextRef = next.isJsonNull() ? null : next.getAsString();
+        JsonElement previous = categories.get("previous");
+        String previousRef = previous.isJsonNull() ? null : previous.getAsString();
+
+        return new Page<>(
+                list,
+                categories.get("limit").getAsInt(),
+                categories.get("offset").getAsInt(),
+                categories.get("total").getAsInt(),
+                nextRef,
+                previousRef);
     }
 
-    public List<Playlist> getFeatured() throws IOException, InterruptedException {
+    public Page<Playlist> getFeatured() throws IOException, InterruptedException {
+        return getFeatured(getResourcePath() + FEATURED_REQUEST_PATH.replaceAll("\\{limit}", limit));
+    }
+
+    public Page<Playlist> getFeatured(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Authorization", "Bearer " + accessToken)
-                .uri(URI.create(getResourcePath() + FEATURED_REQUEST_PATH))
+                .uri(URI.create(url))
                 .GET()
                 .build();
 
@@ -179,9 +230,10 @@ public class AdvisorHttpClient {
         JsonObject jo = JsonParser.parseString(response.body()).getAsJsonObject();
         checkError(jo);
 
-        List<Playlist> list = new ArrayList<>();
+        JsonObject playlists = jo.get("playlists").getAsJsonObject();
 
-        JsonArray elements = jo.get("playlists").getAsJsonObject().get("items").getAsJsonArray();
+        List<Playlist> list = new ArrayList<>();
+        JsonArray elements = playlists.get("items").getAsJsonArray();
         for (JsonElement element : elements) {
             JsonObject playList = element.getAsJsonObject();
 
@@ -195,16 +247,34 @@ public class AdvisorHttpClient {
             list.add(new Playlist(name, href));
         }
 
-        return list;
+        JsonElement next = playlists.get("next");
+        String nextRef = next.isJsonNull() ? null : next.getAsString();
+        JsonElement previous = playlists.get("previous");
+        String previousRef = previous.isJsonNull() ? null : previous.getAsString();
+
+        return new Page<>(
+                list,
+                playlists.get("limit").getAsInt(),
+                playlists.get("offset").getAsInt(),
+                playlists.get("total").getAsInt(),
+                nextRef,
+                previousRef);
     }
 
-    public List<Playlist> getPlaylist(String categoryName) throws IOException, InterruptedException {
+    public Page<Playlist> getPlaylistByCategoryName(String categoryName) throws IOException, InterruptedException {
 
         String categoryId = getCategoryId(categoryName);
+        return getPlaylist(getResourcePath() +
+                        PLAYLIST_REQUEST_PATH
+                                .replace("{category_id}", categoryId)
+                                .replaceAll("\\{limit}", limit));
 
+    }
+
+    public Page<Playlist> getPlaylist(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Authorization", "Bearer " + accessToken)
-                .uri(URI.create(getResourcePath() + PLAYLIST_REQUEST_PATH.replace("{category_id}", categoryId)))
+                .uri(URI.create(url))
                 .GET()
                 .build();
 
@@ -216,7 +286,8 @@ public class AdvisorHttpClient {
 
         List<Playlist> list = new ArrayList<>();
 
-        JsonArray elements = jo.get("playlists").getAsJsonObject().get("items").getAsJsonArray();
+        JsonObject playlists = jo.get("playlists").getAsJsonObject();
+        JsonArray elements = playlists.get("items").getAsJsonArray();
         for (JsonElement element : elements) {
             JsonObject playList = element.getAsJsonObject();
 
@@ -230,7 +301,18 @@ public class AdvisorHttpClient {
             list.add(new Playlist(name, href));
         }
 
-        return list;
+        JsonElement next = playlists.get("next");
+        String nextRef = next.isJsonNull() ? null : next.getAsString();
+        JsonElement previous = playlists.get("previous");
+        String previousRef = previous.isJsonNull() ? null : previous.getAsString();
+
+        return new Page<>(
+                list,
+                playlists.get("limit").getAsInt(),
+                playlists.get("offset").getAsInt(),
+                playlists.get("total").getAsInt(),
+                nextRef,
+                previousRef);
     }
 
     private String getCategoryId(String categoryName) throws IOException, InterruptedException {
@@ -238,11 +320,28 @@ public class AdvisorHttpClient {
             throw new IllegalArgumentException("Unknown category name.");
         }
 
-        List<Category> categories = getCategories();
-        return categories.stream()
-                .filter(c -> categoryName.equalsIgnoreCase(c.getName()))
-                .findFirst()
-                .orElseThrow(() -> new IOException("Unknown category name."))
-                .getId();
+        Page<Category> page = null;
+        while (true) {
+            if (page != null && page.getNext() == null) {
+                throw new IOException("Unknown category name.");
+            }
+
+            if (page == null) {
+                page = getCategories();
+            } else {
+                page = getCategories(page.getNext());
+            }
+
+            List<Category> categories = page.getList();
+            Category category = categories.stream()
+                    .filter(c -> categoryName.equalsIgnoreCase(c.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (category != null) {
+                return category.getId();
+            }
+        }
+
     }
 }

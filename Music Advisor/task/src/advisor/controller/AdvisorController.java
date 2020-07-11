@@ -2,9 +2,15 @@ package advisor.controller;
 
 import advisor.model.AdvisorHttpClient;
 import advisor.model.CodeReceiver;
+import advisor.model.Page;
 import advisor.model.entities.Album;
 import advisor.model.entities.Category;
 import advisor.model.entities.Playlist;
+import advisor.model.navigatestrategy.CategoriesNavigator;
+import advisor.model.navigatestrategy.FeaturedNavigator;
+import advisor.model.navigatestrategy.Navigator;
+import advisor.model.navigatestrategy.NewNavigator;
+import advisor.model.navigatestrategy.PlaylistsNavigator;
 import advisor.veiw.ConsoleView;
 
 import java.io.IOException;
@@ -16,8 +22,9 @@ import static advisor.config.SecureData.CLIENT_ID;
 
 public class AdvisorController {
     private boolean isAuth = false;
-    private final AdvisorHttpClient httpClient = new AdvisorHttpClient();
+    private final AdvisorHttpClient httpClient = AdvisorHttpClient.getInstance();
     private final ConsoleView view = ConsoleView.getInstance();
+    private Navigator navigator = null;
 
     public void setServerPath(String serverPath) {
         httpClient.setServerPath(serverPath);
@@ -25,6 +32,10 @@ public class AdvisorController {
 
     public void setResourcePath(String resourcePath) {
         httpClient.setResourcePath(resourcePath);
+    }
+
+    public void setLimit(String limit) {
+        httpClient.setLimit(limit);
     }
 
     public void run() throws IOException, InterruptedException {
@@ -63,6 +74,12 @@ public class AdvisorController {
                     String name = request.substring(requestWords[0].length()).trim();
                     playlists(name);
                     break;
+                case "next":
+                    next();
+                    break;
+                case "prev":
+                    prev();
+                    break;
                 default:
                     view.showMessage("Invalid request! Try again");
             }
@@ -98,8 +115,9 @@ public class AdvisorController {
 
     private void newAlbums() {
         try {
-            List<Album> list = httpClient.getNewAlbums();
-            view.showList(list);
+            Page<Album> page = httpClient.getNewAlbums();
+            navigator = new NewNavigator(page.getNext(), page.getPrevious());
+            view.showPage(page);
         } catch (IOException | InterruptedException e) {
             view.showMessage(e.getMessage());
         }
@@ -107,8 +125,9 @@ public class AdvisorController {
 
     private void categories() {
         try {
-            List<Category> list = httpClient.getCategories();
-            view.showList(list);
+            Page<Category> page = httpClient.getCategories();
+            navigator = new CategoriesNavigator(page.getNext(), page.getPrevious());
+            view.showPage(page);
         } catch (IOException | InterruptedException e) {
             view.showMessage(e.getMessage());
         }
@@ -116,8 +135,9 @@ public class AdvisorController {
 
     private void featured() {
         try {
-            List<Playlist> list = httpClient.getFeatured();
-            view.showList(list);
+            Page<Playlist> page = httpClient.getFeatured();
+            navigator = new FeaturedNavigator(page.getNext(), page.getPrevious());
+            view.showPage(page);
         } catch (IOException | InterruptedException e) {
             view.showMessage(e.getMessage());
         }
@@ -125,8 +145,41 @@ public class AdvisorController {
 
     private void playlists(String name) {
         try {
-            List<Playlist> list = httpClient.getPlaylist(name);
-            view.showList(list);
+            Page<Playlist> page = httpClient.getPlaylistByCategoryName(name);
+            navigator = new PlaylistsNavigator(page.getNext(), page.getPrevious());
+            view.showPage(page);
+        } catch (IOException | InterruptedException e) {
+            view.showMessage(e.getMessage());
+        }
+    }
+
+    private void next() {
+        if (navigator == null || !navigator.hasNext()) {
+            view.showMessage("No more pages.");
+            return;
+        }
+
+        try {
+            Page<?> page = navigator.next();
+            navigator.setNext(page.getNext());
+            navigator.setPrevious(page.getPrevious());
+            view.showPage(page);
+        } catch (IOException | InterruptedException e) {
+            view.showMessage(e.getMessage());
+        }
+    }
+
+    private void prev() {
+        if (navigator == null || !navigator.hasPrev()) {
+            view.showMessage("No more pages.");
+            return;
+        }
+
+        try {
+            Page<?> page = navigator.prev();
+            navigator.setNext(page.getNext());
+            navigator.setPrevious(page.getPrevious());
+            view.showPage(page);
         } catch (IOException | InterruptedException e) {
             view.showMessage(e.getMessage());
         }

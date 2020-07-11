@@ -188,9 +188,9 @@ topics:
   - title: Generics and Reflection
     theory_id: 3562
   - title: Type Erasure
-    theory_id: 3560
+    theory_id: 10086
   - title: Reification
-    theory_id: 3561
+    theory_id: 10087
   - title: Errors in programs
     theory_id: 3536
   - title: Reflection basics
